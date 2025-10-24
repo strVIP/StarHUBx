@@ -1,2 +1,140 @@
 # StarHUBx
 FISH IT OP SCRIPT
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+local remote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Fish")
+
+local gui = Instance.new("ScreenGui", game.CoreGui)
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 260, 0, 360)
+frame.Position = UDim2.new(0, 50, 0, 100)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.BackgroundTransparency = 0.1
+frame.ClipsDescendants = true
+frame.Name = "FishItOP"
+
+local uiCorner = Instance.new("UICorner", frame)
+uiCorner.CornerRadius = UDim.new(0, 12)
+
+local title = Instance.new("TextLabel", frame)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Text = "🎣 Fish It OP GUI"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBold
+title.TextSize = 20
+
+local function createBtn(text, y)
+    local btn = Instance.new("TextButton", frame)
+    btn.Size = UDim2.new(0, 220, 0, 40)
+    btn.Position = UDim2.new(0, 20, 0, y)
+    btn.Text = text
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 18
+
+    local corner = Instance.new("UICorner", btn)
+    corner.CornerRadius = UDim.new(0, 8)
+
+    btn.MouseEnter:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+    end)
+    btn.MouseLeave:Connect(function()
+        btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    end)
+
+    return btn
+end
+
+local autoFish = false
+local autoSell = false
+local autoUpgrade = false
+local autoBlatant = false
+
+local fishBtn = createBtn("Auto Fish: OFF", 50)
+local sellBtn = createBtn("Auto Sell: OFF", 100)
+local upgradeBtn = createBtn("Auto Upgrade: OFF", 150)
+local boostBtn = createBtn("Speed Boost", 200)
+local tpBtn = createBtn("Teleport Spot", 250)
+local blatantBtn = createBtn("Blatant Fishing: OFF", 300)
+
+fishBtn.MouseButton1Click:Connect(function()
+    autoFish = not autoFish
+    fishBtn.Text = autoFish and "Auto Fish: ON" or "Auto Fish: OFF"
+    if autoFish then
+        spawn(function()
+            while autoFish do
+                pcall(function()
+                    remote:FireServer("Cast")
+                    wait(0.2)
+                    remote:FireServer("Reel")
+                end)
+                wait(0.8)
+            end
+        end)
+    end
+end)
+
+sellBtn.MouseButton1Click:Connect(function()
+    autoSell = not autoSell
+    sellBtn.Text = autoSell and "Auto Sell: ON" or "Auto Sell: OFF"
+    if autoSell then
+        spawn(function()
+            while autoSell do
+                local sellZone = workspace:FindFirstChild("SellZone")
+                if sellZone then
+                    hrp.CFrame = sellZone.CFrame + Vector3.new(0, 3, 0)
+                end
+                wait(5)
+            end
+        end)
+    end
+end)
+
+upgradeBtn.MouseButton1Click:Connect(function()
+    autoUpgrade = not autoUpgrade
+    upgradeBtn.Text = autoUpgrade and "Auto Upgrade: ON" or "Auto Upgrade: OFF"
+    if autoUpgrade then
+        spawn(function()
+            while autoUpgrade do
+                local upgradeRemote = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes"):FindFirstChild("UpgradeRod")
+                if upgradeRemote then
+                    upgradeRemote:FireServer()
+                end
+                wait(15)
+            end
+        end)
+    end
+end)
+
+boostBtn.MouseButton1Click:Connect(function()
+    if char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = 120
+        char.Humanoid.JumpPower = 100
+    end
+end)
+
+tpBtn.MouseButton1Click:Connect(function()
+    hrp.CFrame = CFrame.new(1000, 50, -500)
+end)
+
+blatantBtn.MouseButton1Click:Connect(function()
+    autoBlatant = not autoBlatant
+    blatantBtn.Text = autoBlatant and "Blatant Fishing: ON" or "Blatant Fishing: OFF"
+    if autoBlatant then
+        spawn(function()
+            while autoBlatant do
+                for i = 1, 5 do
+                    remote:FireServer("Cast")
+                    remote:FireServer("Reel")
+                end
+                wait(0.2)
+            end
+        end)
+    end
+end)
