@@ -1,13 +1,14 @@
-# StarHUBx
-FISH IT OP SCRIPT
 local plr = game.Players.LocalPlayer
 local char = plr.Character or plr.CharacterAdded:Wait()
 local hrp = char:WaitForChild("HumanoidRootPart")
 local remote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Fish")
+local enchantRemote = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes"):FindFirstChild("EnchantRod")
+local upgradeRemote = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes"):FindFirstChild("UpgradeRod")
 
+-- GUI Setup
 local gui = Instance.new("ScreenGui", game.CoreGui)
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 260, 0, 360)
+frame.Size = UDim2.new(0, 260, 0, 480)
 frame.Position = UDim2.new(0, 50, 0, 100)
 frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 frame.BorderSizePixel = 0
@@ -15,14 +16,13 @@ frame.Active = true
 frame.Draggable = true
 frame.BackgroundTransparency = 0.1
 frame.ClipsDescendants = true
-frame.Name = "FishItOP"
 
 local uiCorner = Instance.new("UICorner", frame)
 uiCorner.CornerRadius = UDim.new(0, 12)
 
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 40)
-title.Text = "🎣 Fish It OP GUI"
+title.Text = "🎣 Fish It Brutal Hub"
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 title.BackgroundTransparency = 1
 title.Font = Enum.Font.GothamBold
@@ -33,19 +33,19 @@ local function createBtn(text, y)
     btn.Size = UDim2.new(0, 220, 0, 40)
     btn.Position = UDim2.new(0, 20, 0, y)
     btn.Text = text
-    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    btn.Font = Enum.Font.GothamBold
+    btn.BackgroundColor3 = Color3.fromRGB(0, 255, 170)
+    btn.TextColor3 = Color3.fromRGB(0, 0, 0)
+    btn.Font = Enum.Font.FredokaOne
     btn.TextSize = 18
 
     local corner = Instance.new("UICorner", btn)
     corner.CornerRadius = UDim.new(0, 8)
 
     btn.MouseEnter:Connect(function()
-        btn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+        btn.BackgroundColor3 = Color3.fromRGB(0, 200, 140)
     end)
     btn.MouseLeave:Connect(function()
-        btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        btn.BackgroundColor3 = Color3.fromRGB(0, 255, 170)
     end)
 
     return btn
@@ -55,13 +55,17 @@ local autoFish = false
 local autoSell = false
 local autoUpgrade = false
 local autoBlatant = false
+local autoEnchant = false
+local antiAFK = false
 
 local fishBtn = createBtn("Auto Fish: OFF", 50)
 local sellBtn = createBtn("Auto Sell: OFF", 100)
 local upgradeBtn = createBtn("Auto Upgrade: OFF", 150)
-local boostBtn = createBtn("Speed Boost", 200)
-local tpBtn = createBtn("Teleport Spot", 250)
-local blatantBtn = createBtn("Blatant Fishing: OFF", 300)
+local enchantBtn = createBtn("Auto Enchant: OFF", 200)
+local afkBtn = createBtn("Anti-AFK: OFF", 250)
+local boostBtn = createBtn("Speed Boost", 300)
+local tpBtn = createBtn("Teleport Spot", 350)
+local blatantBtn = createBtn("Blatant Fishing: OFF", 400)
 
 fishBtn.MouseButton1Click:Connect(function()
     autoFish = not autoFish
@@ -102,11 +106,40 @@ upgradeBtn.MouseButton1Click:Connect(function()
     if autoUpgrade then
         spawn(function()
             while autoUpgrade do
-                local upgradeRemote = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes"):FindFirstChild("UpgradeRod")
                 if upgradeRemote then
                     upgradeRemote:FireServer()
                 end
                 wait(15)
+            end
+        end)
+    end
+end)
+
+enchantBtn.MouseButton1Click:Connect(function()
+    autoEnchant = not autoEnchant
+    enchantBtn.Text = autoEnchant and "Auto Enchant: ON" or "Auto Enchant: OFF"
+    if autoEnchant then
+        spawn(function()
+            while autoEnchant do
+                if enchantRemote then
+                    enchantRemote:FireServer()
+                end
+                wait(20)
+            end
+        end)
+    end
+end)
+
+afkBtn.MouseButton1Click:Connect(function()
+    antiAFK = not antiAFK
+    afkBtn.Text = antiAFK and "Anti-AFK: ON" or "Anti-AFK: OFF"
+    if antiAFK then
+        spawn(function()
+            while antiAFK do
+                game:GetService("VirtualInputManager"):SendKeyEvent(true, "W", false, game)
+                wait(0.1)
+                game:GetService("VirtualInputManager"):SendKeyEvent(false, "W", false, game)
+                wait(60)
             end
         end)
     end
